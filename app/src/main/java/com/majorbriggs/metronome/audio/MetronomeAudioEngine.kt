@@ -5,6 +5,7 @@ import android.media.AudioAttributes
 import android.media.AudioFormat
 import android.media.AudioFocusRequest
 import android.media.AudioManager
+import android.media.AudioTimestamp
 import android.media.AudioTrack
 import android.os.Handler
 import android.os.Looper
@@ -35,6 +36,8 @@ class MetronomeAudioEngine @Inject constructor(
     private val silenceChunk: ShortArray = ShortArray(CHUNK_SAMPLES) // always zeros
 
     private val audioManager = context.getSystemService(Context.AUDIO_SERVICE) as AudioManager
+    private val callbackHandler = Handler(Looper.getMainLooper())
+    private val audioTimestamp = AudioTimestamp()  // pre-allocated, reused each beat
 
     @Volatile private var isRunning = false
     private val pendingBpm = AtomicInteger(-1)
@@ -102,6 +105,7 @@ class MetronomeAudioEngine @Inject constructor(
     fun stop() {
         if (!isRunning) return
         isRunning = false
+        callbackHandler.removeCallbacksAndMessages(null)
         // Stop the track before join() so any blocked write() call returns immediately
         audioTrack?.stop()
         audioThread?.join(500)
@@ -157,12 +161,31 @@ class MetronomeAudioEngine @Inject constructor(
                 val isAccent = currentSig.accentedBeats.contains(beatIndex)
                 val clickPcm = if (isAccent) accentPcm else regularPcm
 
-                // Fire callback before write so UI updates while click travels through FIFO
-                listener?.onBeat(beatIndex, isAccent)
+                // Snapshot write head and playback position before the click lands in the buffer.
+                // AudioTimestamp tells us exactly when sample `preWriteHead` will reach the DAC,
+                // so we can delay the UI/haptic callback to match the audible beat.
+                val preWriteHead = writeHead
+                val hasTimestamp = track.getTimestamp(audioTimestamp)
+                val nowNs = System.nanoTime()
 
                 val written = track.write(clickPcm, 0, CLICK_SAMPLES, AudioTrack.WRITE_BLOCKING)
                 if (written < 0) break
                 writeHead += written
+
+                val capturedIndex = beatIndex
+                val capturedAccent = isAccent
+                val delayMs = if (hasTimestamp && audioTimestamp.framePosition > 0) {
+                    // time(N) = ts.nanoTime + (N - ts.framePosition) / SAMPLE_RATE
+                    val playNs = audioTimestamp.nanoTime +
+                        (preWriteHead - audioTimestamp.framePosition) * 1_000_000_000L / SAMPLE_RATE
+                    ((playNs - nowNs) / 1_000_000L).coerceAtLeast(0L)
+                } else {
+                    0L
+                }
+                callbackHandler.postDelayed(
+                    { listener?.onBeat(capturedIndex, capturedAccent) },
+                    delayMs
+                )
 
                 beatIndex = (beatIndex + 1) % currentSig.beatsPerBar
                 nextBeatSampleD += samplesPerBeat

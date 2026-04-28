@@ -8,7 +8,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.focusable
-import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -41,10 +40,11 @@ import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.drawscope.Stroke
-import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.input.rotary.onRotaryScrollEvent
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.PlatformTextStyle
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
@@ -62,8 +62,7 @@ import com.majorbriggs.metronome.presentation.theme.IconAudio
 import com.majorbriggs.metronome.presentation.theme.IconBoth
 import com.majorbriggs.metronome.presentation.theme.IconVibrate
 import com.majorbriggs.metronome.presentation.theme.OutfitFamily
-import kotlin.math.cos
-import kotlin.math.sin
+
 
 @Composable
 fun MetronomeScreen(
@@ -97,12 +96,10 @@ fun MetronomeScreen(
 
         // Content column shifted slightly down to center in the wider arc safe zone
         Column(
-            modifier = Modifier.offset(y = 6.dp),
+            modifier = Modifier.offset(y = 10.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(3.dp)
         ) {
-            // Beat dots
-            Spacer(modifier = Modifier.height(10.dp))
             BeatIndicatorRow(
                 beats = state.timeSignature.beatsPerBar,
                 currentBeat = state.currentBeat,
@@ -111,15 +108,20 @@ fun MetronomeScreen(
             )
             Text(
                 text = "${state.bpm}",
-                fontFamily = OutfitFamily,
-                fontSize = 52.sp,
-                fontWeight = FontWeight.Bold,
-                color = Color.White,
+                style = TextStyle(
+                    fontFamily = OutfitFamily,
+                    fontSize = 52.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.White,
+                    lineHeight = 52.sp,
+                    platformStyle = PlatformTextStyle(includeFontPadding = false),
+                ),
                 modifier = Modifier.semantics { contentDescription = "${state.bpm} BPM" }
             )
 
             // Shortcut buttons row: time sig + indication mode
-            Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+            Row(
+                modifier = Modifier.padding(bottom = 10.dp), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
                 TimeSigButton(
                     sig = state.timeSignature,
                     onClick = onNavigateToTimeSig
@@ -128,13 +130,13 @@ fun MetronomeScreen(
                     mode = state.feedbackMode,
                     onClick = onNavigateToIndication
                 )
+                TapTempoButton(onClick = onTapTempo)
             }
 
             // Play / Stop button
             PlayStopButton(
                 isPlaying = state.isRunning,
                 onClick = onTogglePlay,
-                onLongClick = onTapTempo
             )
         }
     }
@@ -148,8 +150,8 @@ fun ArcRing(bpm: Int, modifier: Modifier = Modifier) {
     Canvas(modifier = modifier) {
         val cx = size.width / 2f
         val cy = size.height / 2f
-        val r = (size.minDimension / 2f) * 0.87f
         val strokePx = 5.dp.toPx()
+        val r = size.minDimension / 2f - strokePx / 2f
         val startAngle = 140f
         val sweepAngle = 260f
 
@@ -174,15 +176,6 @@ fun ArcRing(bpm: Int, modifier: Modifier = Modifier) {
                 style = Stroke(width = strokePx, cap = StrokeCap.Round)
             )
         }
-
-        val thumbAngleRad = Math.toRadians((startAngle + sweepAngle * pct).toDouble())
-        val thumbX = cx + r * cos(thumbAngleRad).toFloat()
-        val thumbY = cy + r * sin(thumbAngleRad).toFloat()
-        drawCircle(
-            color = Accent,
-            radius = 7.dp.toPx(),
-            center = Offset(thumbX, thumbY)
-        )
     }
 }
 
@@ -227,7 +220,7 @@ fun IndicationButton(mode: FeedbackMode, onClick: () -> Unit) {
 }
 
 @Composable
-fun PlayStopButton(isPlaying: Boolean, onClick: () -> Unit, onLongClick: () -> Unit) {
+fun PlayStopButton(isPlaying: Boolean, onClick: () -> Unit) {
     Box(
         modifier = Modifier
             .size(40.dp)
@@ -237,12 +230,7 @@ fun PlayStopButton(isPlaying: Boolean, onClick: () -> Unit, onLongClick: () -> U
                 if (isPlaying) Modifier.border(1.5.dp, Accent, CircleShape)
                 else Modifier
             )
-            .pointerInput(isPlaying) {
-                detectTapGestures(
-                    onTap = { onClick() },
-                    onLongPress = { onLongClick() }
-                )
-            }
+            .clickable(onClick = onClick)
             .semantics {
                 contentDescription = if (isPlaying) "Stop metronome" else "Start metronome"
             },
@@ -274,6 +262,31 @@ fun PlayStopButton(isPlaying: Boolean, onClick: () -> Unit, onLongClick: () -> U
                 drawPath(path, color = Color(0xFF0F0F0F))
             }
         }
+    }
+}
+
+@Composable
+fun TapTempoButton(onClick: () -> Unit) {
+    Box(
+        modifier = Modifier
+            .size(34.dp)
+            .clip(CircleShape)
+            .background(Color(0xFF1E1E1E))
+            .border(1.5.dp, Color(0xFF3A3A3A), CircleShape)
+            .clickable { onClick() }
+            .semantics {
+                contentDescription = "Tap tempo"
+            },
+        contentAlignment = Alignment.Center
+    ){
+        Text(
+            text = "TAP",
+            fontFamily = OutfitFamily,
+            fontSize = 8.sp,
+            fontWeight = FontWeight.Bold,
+            color = Color(0xFFAAAAAA),
+            letterSpacing = 0.08.em
+        )
     }
 }
 

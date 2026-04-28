@@ -55,6 +55,7 @@ dependencies {
     implementation(libs.lifecycle.runtime.compose)
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.wear)
+    implementation(libs.wear.ongoing)
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler)
     androidTestImplementation(platform(libs.compose.bom))

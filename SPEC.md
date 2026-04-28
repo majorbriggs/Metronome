@@ -71,11 +71,9 @@ The app has **one main screen**. No navigation between multiple screens — all 
 6. **Tap Tempo button** — secondary button below start/stop.
 7. **Feedback mode toggle** — icon button cycling through `vibration → audio → both`.
 
-> Wear OS rotary crown / bezel support for BPM adjustment can be added in a later version.
-
 ### 3.2 Visual Beat Indicator
 
-- While running, the dot corresponding to the current beat scales up and/or changes color on each tick.
+- While running, the dot corresponding to the current beat changes color on each tick.
 - Accented beat dot uses the theme's primary accent color; regular beats use a secondary color.
 - While stopped, all dots are shown in their idle (dim) state.
 
@@ -224,7 +222,6 @@ To meet Play store requirements for a first release:
 
 ## 10. Out of Scope (v1)
 
-- Rotary crown / bezel BPM control (future enhancement)
 - Custom BPM presets / named tempo labels
 - Multiple accent patterns beyond the defined time signatures
 - Phone companion app

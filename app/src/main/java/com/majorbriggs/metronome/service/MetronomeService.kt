@@ -6,9 +6,14 @@ import android.app.NotificationManager
 import android.app.PendingIntent
 import android.app.Service
 import android.content.Intent
+import android.content.pm.ServiceInfo
+import android.media.session.MediaSession
+import android.media.session.PlaybackState
 import android.os.IBinder
 import android.os.PowerManager
 import androidx.core.app.NotificationCompat
+import androidx.wear.ongoing.OngoingActivity
+import androidx.wear.ongoing.Status
 import com.majorbriggs.metronome.R
 import com.majorbriggs.metronome.audio.MetronomeAudioEngine
 import com.majorbriggs.metronome.data.FeedbackMode
@@ -39,6 +44,7 @@ class MetronomeService : Service() {
     @Inject lateinit var repository: MetronomeRepository
 
     private var wakeLock: PowerManager.WakeLock? = null
+    private var mediaSession: MediaSession? = null
     private var bpm = 120
     private var timeSignature = TimeSignature.FOUR_FOUR
     private var feedbackMode = FeedbackMode.BOTH
@@ -48,6 +54,7 @@ class MetronomeService : Service() {
         super.onCreate()
         audioEngine.setListener { beatIndex, isAccent -> handleBeat(beatIndex, isAccent) }
         beatScheduler.setListener { beatIndex, isAccent -> handleBeat(beatIndex, isAccent) }
+        mediaSession = MediaSession(this, "MetronomeSession")
         createNotificationChannel()
     }
 
@@ -61,7 +68,8 @@ class MetronomeService : Service() {
                 feedbackMode = FeedbackMode.fromKey(intent.getStringExtra(EXTRA_FEEDBACK_MODE) ?: "both")
                 isRunning = true
                 acquireWakeLock()
-                startForeground(NOTIFICATION_ID, buildNotification())
+                activateMediaSession()
+                startForeground(NOTIFICATION_ID, buildNotification(), ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PLAYBACK)
                 startEngines()
             }
             ACTION_STOP -> {
@@ -100,6 +108,26 @@ class MetronomeService : Service() {
         }
         audioEngine.release()
         beatScheduler.release()
+        mediaSession?.release()
+        mediaSession = null
+    }
+
+    private fun activateMediaSession() {
+        mediaSession?.setPlaybackState(
+            PlaybackState.Builder()
+                .setState(PlaybackState.STATE_PLAYING, PlaybackState.PLAYBACK_POSITION_UNKNOWN, 1f)
+                .build()
+        )
+        mediaSession?.isActive = true
+    }
+
+    private fun deactivateMediaSession() {
+        mediaSession?.setPlaybackState(
+            PlaybackState.Builder()
+                .setState(PlaybackState.STATE_STOPPED, PlaybackState.PLAYBACK_POSITION_UNKNOWN, 1f)
+                .build()
+        )
+        mediaSession?.isActive = false
     }
 
     private fun startEngines() {
@@ -119,6 +147,7 @@ class MetronomeService : Service() {
         isRunning = false
         stopEngines()
         releaseWakeLock()
+        deactivateMediaSession()
         @Suppress("DEPRECATION")
         stopForeground(true)
     }
@@ -146,7 +175,7 @@ class MetronomeService : Service() {
     }
 
     private fun createNotificationChannel() {
-        val channel = NotificationChannel(CHANNEL_ID, "Metronome", NotificationManager.IMPORTANCE_LOW)
+        val channel = NotificationChannel(CHANNEL_ID, "Metronome", NotificationManager.IMPORTANCE_DEFAULT)
             .apply { description = "Metronome running indicator" }
         (getSystemService(NOTIFICATION_SERVICE) as NotificationManager).createNotificationChannel(channel)
     }
@@ -162,14 +191,31 @@ class MetronomeService : Service() {
             Intent(this, MetronomeService::class.java).apply { action = ACTION_STOP },
             PendingIntent.FLAG_IMMUTABLE
         )
-        return NotificationCompat.Builder(this, CHANNEL_ID)
+
+        val notificationBuilder = NotificationCompat.Builder(this, CHANNEL_ID)
             .setContentTitle("Metronome")
             .setContentText("$bpm BPM · ${timeSignature.displayName}")
-            .setSmallIcon(R.drawable.ic_launcher_foreground)
+            .setSmallIcon(R.drawable.ic_ongoing_metronome)
             .setContentIntent(openPi)
             .addAction(0, "Stop", stopPi)
             .setOngoing(true)
+            .setCategory(NotificationCompat.CATEGORY_TRANSPORT)
+            .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+
+        val status = Status.Builder()
+            .addTemplate("#bpm# BPM · #sig#")
+            .addPart("bpm", Status.TextPart("$bpm"))
+            .addPart("sig", Status.TextPart(timeSignature.displayName))
             .build()
+
+        OngoingActivity.Builder(this, NOTIFICATION_ID, notificationBuilder)
+            .setStaticIcon(R.drawable.ic_ongoing_metronome)
+            .setTouchIntent(openPi)
+            .setStatus(status)
+            .build()
+            .apply(this)
+
+        return notificationBuilder.build()
     }
 
     private fun updateNotification() {
