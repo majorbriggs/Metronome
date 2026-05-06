@@ -1,4 +1,4 @@
-package com.majorbriggs.metronome.presentation
+package com.majorbriggs.metronome.presentation.timesignature
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues

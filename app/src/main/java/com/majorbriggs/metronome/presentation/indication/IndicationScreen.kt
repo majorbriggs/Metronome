@@ -1,4 +1,4 @@
-package com.majorbriggs.metronome.presentation
+package com.majorbriggs.metronome.presentation.indication
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
@@ -27,6 +27,7 @@ import androidx.wear.compose.material.Text
 import androidx.wear.compose.material.Vignette
 import androidx.wear.compose.material.VignettePosition
 import com.majorbriggs.metronome.data.FeedbackMode
+import com.majorbriggs.metronome.presentation.components.IndicationIcon
 import com.majorbriggs.metronome.presentation.theme.Accent
 import com.majorbriggs.metronome.presentation.theme.AccentDim
 import com.majorbriggs.metronome.presentation.theme.BgSurface

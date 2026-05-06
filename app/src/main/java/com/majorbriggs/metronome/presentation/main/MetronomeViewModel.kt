@@ -1,4 +1,4 @@
-package com.majorbriggs.metronome.presentation
+package com.majorbriggs.metronome.presentation.main
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -6,6 +6,7 @@ import com.majorbriggs.metronome.data.FeedbackMode
 import com.majorbriggs.metronome.data.MetronomePreferences
 import com.majorbriggs.metronome.data.MetronomeRepository
 import com.majorbriggs.metronome.data.TimeSignature
+import com.majorbriggs.metronome.presentation.MetronomeUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -13,14 +14,6 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-
-data class MetronomeUiState(
-    val bpm: Int = 120,
-    val timeSignature: TimeSignature = TimeSignature.FOUR_FOUR,
-    val feedbackMode: FeedbackMode = FeedbackMode.BOTH,
-    val isRunning: Boolean = false,
-    val currentBeat: Int = -1
-)
 
 @HiltViewModel
 class MetronomeViewModel @Inject constructor(
@@ -52,38 +45,18 @@ class MetronomeViewModel @Inject constructor(
 
     fun setBpm(bpm: Int) {
         val clamped = bpm.coerceIn(40, 240)
-        viewModelScope.launch { preferences.setBpm(clamped) }
         repository.sendUpdate(clamped, state.value.timeSignature, state.value.feedbackMode)
-    }
-
-    fun cycleTimeSignature() {
-        val next = when (state.value.timeSignature) {
-            TimeSignature.FOUR_FOUR -> TimeSignature.THREE_FOUR
-            TimeSignature.THREE_FOUR -> TimeSignature.SIX_EIGHT
-            TimeSignature.SIX_EIGHT -> TimeSignature.FOUR_FOUR
-        }
-        viewModelScope.launch { preferences.setTimeSignature(next) }
-        repository.sendUpdate(state.value.bpm, next, state.value.feedbackMode)
-    }
-
-    fun cycleFeedbackMode() {
-        val next = when (state.value.feedbackMode) {
-            FeedbackMode.VIBRATION -> FeedbackMode.AUDIO
-            FeedbackMode.AUDIO -> FeedbackMode.BOTH
-            FeedbackMode.BOTH -> FeedbackMode.VIBRATION
-        }
-        viewModelScope.launch { preferences.setFeedbackMode(next) }
-        repository.sendUpdate(state.value.bpm, state.value.timeSignature, next)
+        viewModelScope.launch { preferences.setBpm(clamped) }
     }
 
     fun setTimeSignature(ts: TimeSignature) {
-        viewModelScope.launch { preferences.setTimeSignature(ts) }
         repository.sendUpdate(state.value.bpm, ts, state.value.feedbackMode)
+        viewModelScope.launch { preferences.setTimeSignature(ts) }
     }
 
     fun setFeedbackMode(mode: FeedbackMode) {
-        viewModelScope.launch { preferences.setFeedbackMode(mode) }
         repository.sendUpdate(state.value.bpm, state.value.timeSignature, mode)
+        viewModelScope.launch { preferences.setFeedbackMode(mode) }
     }
 
     fun onTapTempo() {

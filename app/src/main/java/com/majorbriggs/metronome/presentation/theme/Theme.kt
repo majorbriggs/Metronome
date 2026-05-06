@@ -13,7 +13,7 @@ import com.majorbriggs.metronome.R
 // Design system color tokens (amber accent, OLED dark)
 val Accent       = Color(0xFFF0B429)
 val AccentDim    = Color(0x26F0B429)
-val BgPrimary    = Color(0xFF0F0F0F)
+val BgPrimary    = Color.Black
 val BgSurface    = Color(0xFF1C1C1C)
 val BgElevated   = Color(0xFF2A2A2A)
 val Border       = Color(0xFF2E2E2E)
