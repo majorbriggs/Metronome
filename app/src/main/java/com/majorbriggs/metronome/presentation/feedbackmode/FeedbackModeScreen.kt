@@ -1,4 +1,4 @@
-package com.majorbriggs.metronome.presentation.indication
+package com.majorbriggs.metronome.presentation.feedbackmode
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
@@ -27,7 +27,7 @@ import androidx.wear.compose.material.Text
 import androidx.wear.compose.material.Vignette
 import androidx.wear.compose.material.VignettePosition
 import com.majorbriggs.metronome.data.FeedbackMode
-import com.majorbriggs.metronome.presentation.components.IndicationIcon
+import com.majorbriggs.metronome.presentation.components.FeedbackModeIcon
 import com.majorbriggs.metronome.presentation.theme.Accent
 import com.majorbriggs.metronome.presentation.theme.AccentDim
 import com.majorbriggs.metronome.presentation.theme.BgSurface
@@ -35,7 +35,7 @@ import com.majorbriggs.metronome.presentation.theme.OutfitFamily
 import com.majorbriggs.metronome.presentation.theme.TextSecondary
 
 @Composable
-fun IndicationScreen(
+fun FeedbackModeScreen(
     selectedMode: FeedbackMode,
     onSelect: (FeedbackMode) -> Unit
 ) {
@@ -63,7 +63,7 @@ fun IndicationScreen(
             item {
                 ListHeader {
                     Text(
-                        text = "INDICATION",
+                        text = "FEEDBACK MODE",
                         fontFamily = OutfitFamily,
                         fontSize = 10.sp,
                         color = TextSecondary
@@ -86,7 +86,7 @@ fun IndicationScreen(
                         },
                     label = {
                         Row(verticalAlignment = Alignment.CenterVertically) {
-                            IndicationIcon(mode = mode, tint = iconTint, size = 24.dp)
+                            FeedbackModeIcon(mode = mode, tint = iconTint, size = 24.dp)
                             Spacer(Modifier.width(10.dp))
                             Text(
                                 text = when (mode) {

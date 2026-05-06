@@ -49,7 +49,7 @@ fun TimeSigButton(sig: TimeSignature, onClick: () -> Unit, modifier: Modifier = 
 }
 
 @Composable
-fun IndicationButton(mode: FeedbackMode, onClick: () -> Unit, modifier: Modifier = Modifier) {
+fun FeedbackModeButton(mode: FeedbackMode, onClick: () -> Unit, modifier: Modifier = Modifier) {
     Box(
         modifier = modifier
             .size(34.dp)
@@ -58,11 +58,11 @@ fun IndicationButton(mode: FeedbackMode, onClick: () -> Unit, modifier: Modifier
             .border(1.5.dp, Color(0xFF3A3A3A), CircleShape)
             .clickable { onClick() }
             .semantics {
-                contentDescription = "Indication mode: ${mode.name.lowercase()}, tap to change"
+                contentDescription = "Feedback mode: ${mode.name.lowercase()}, tap to change"
             },
         contentAlignment = Alignment.Center
     ) {
-        IndicationIcon(mode = mode, tint = Color(0xFF888888), size = 18.dp)
+        FeedbackModeIcon(mode = mode, tint = Color(0xFF888888), size = 18.dp)
     }
 }
 
@@ -92,7 +92,7 @@ fun TapTempoButton(onClick: () -> Unit, modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun IndicationIcon(mode: FeedbackMode, tint: Color, size: Dp = 18.dp) {
+fun FeedbackModeIcon(mode: FeedbackMode, tint: Color, size: Dp = 18.dp) {
     when (mode) {
         FeedbackMode.VIBRATION -> IconVibrate(tint = tint, size = size)
         FeedbackMode.AUDIO -> IconAudio(tint = tint, size = size)

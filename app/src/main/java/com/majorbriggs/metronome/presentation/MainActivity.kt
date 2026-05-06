@@ -20,7 +20,7 @@ import androidx.wear.ambient.AmbientLifecycleObserver
 import androidx.wear.compose.navigation.SwipeDismissableNavHost
 import androidx.wear.compose.navigation.composable
 import androidx.wear.compose.navigation.rememberSwipeDismissableNavController
-import com.majorbriggs.metronome.presentation.indication.IndicationScreen
+import com.majorbriggs.metronome.presentation.feedbackmode.FeedbackModeScreen
 import com.majorbriggs.metronome.presentation.main.AmbientMetronomeScreen
 import com.majorbriggs.metronome.presentation.main.MetronomeScreen
 import com.majorbriggs.metronome.presentation.main.MetronomeViewModel
@@ -88,7 +88,7 @@ class MainActivity : ComponentActivity() {
                                 onBpmChange = viewModel::setBpm,
                                 onTapTempo = viewModel::onTapTempo,
                                 onNavigateToTimeSig = { navController.navigate("time_sig") },
-                                onNavigateToIndication = { navController.navigate("indication") }
+                                onNavigateToFeedbackMode = { navController.navigate("feedback_mode") }
                             )
                         }
                         composable("time_sig") {
@@ -100,8 +100,8 @@ class MainActivity : ComponentActivity() {
                                 }
                             )
                         }
-                        composable("indication") {
-                            IndicationScreen(
+                        composable("feedback_mode") {
+                            FeedbackModeScreen(
                                 selectedMode = state.feedbackMode,
                                 onSelect = { mode ->
                                     viewModel.setFeedbackMode(mode)

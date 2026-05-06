@@ -35,7 +35,7 @@ import androidx.wear.tooling.preview.devices.WearDevices
 import com.majorbriggs.metronome.presentation.MetronomeUiState
 import com.majorbriggs.metronome.presentation.components.ArcRing
 import com.majorbriggs.metronome.presentation.components.BeatIndicatorRow
-import com.majorbriggs.metronome.presentation.components.IndicationButton
+import com.majorbriggs.metronome.presentation.components.FeedbackModeButton
 import com.majorbriggs.metronome.presentation.components.PlayStopButton
 import com.majorbriggs.metronome.presentation.components.TapTempoButton
 import com.majorbriggs.metronome.presentation.components.TimeSigButton
@@ -49,7 +49,7 @@ fun MetronomeScreen(
     onBpmChange: (Int) -> Unit,
     onTapTempo: () -> Unit,
     onNavigateToTimeSig: () -> Unit,
-    onNavigateToIndication: () -> Unit
+    onNavigateToFeedbackMode: () -> Unit
 ) {
     val focusRequester = remember { FocusRequester() }
     var bpmAccumulator by remember { mutableFloatStateOf(0f) }
@@ -75,7 +75,6 @@ fun MetronomeScreen(
             modifier = Modifier.fillMaxSize()
         )
 
-        // Content column shifted slightly down to center in the wider arc safe zone
         Column(
             modifier = Modifier.offset(y = 10.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -100,7 +99,6 @@ fun MetronomeScreen(
                 modifier = Modifier.semantics { contentDescription = "${state.bpm} BPM" }
             )
 
-            // Shortcut buttons row: time sig + indication mode
             Row(
                 modifier = Modifier.padding(bottom = 10.dp), 
                 horizontalArrangement = Arrangement.spacedBy(10.dp)
@@ -109,14 +107,13 @@ fun MetronomeScreen(
                     sig = state.timeSignature,
                     onClick = onNavigateToTimeSig
                 )
-                IndicationButton(
+                FeedbackModeButton(
                     mode = state.feedbackMode,
-                    onClick = onNavigateToIndication
+                    onClick = onNavigateToFeedbackMode
                 )
                 TapTempoButton(onClick = onTapTempo)
             }
 
-            // Play / Stop button
             PlayStopButton(
                 isPlaying = state.isRunning,
                 onClick = onTogglePlay,
@@ -160,6 +157,6 @@ fun MetronomeScreenPreview() {
         onBpmChange = {},
         onTapTempo = {},
         onNavigateToTimeSig = {},
-        onNavigateToIndication = {}
+        onNavigateToFeedbackMode = {}
     )
 }
