@@ -21,6 +21,7 @@ enum class TimeSignature(
     val beatsPerBar: Int,
     val accentedBeats: Set<Int>
 ) {
+    NONE("1_1", "1/1", 0, setOf(0)),
     FOUR_FOUR("4_4", "4/4", 4, setOf(0)),
     THREE_FOUR("3_4", "3/4", 3, setOf(0)),
     SIX_EIGHT("6_8", "6/8", 6, setOf(0, 3));

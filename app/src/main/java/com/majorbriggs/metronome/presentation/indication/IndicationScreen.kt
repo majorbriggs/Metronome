@@ -86,7 +86,7 @@ fun IndicationScreen(
                         },
                     label = {
                         Row(verticalAlignment = Alignment.CenterVertically) {
-                            IndicationIcon(mode = mode, tint = iconTint, size = 18.dp)
+                            IndicationIcon(mode = mode, tint = iconTint, size = 24.dp)
                             Spacer(Modifier.width(10.dp))
                             Text(
                                 text = when (mode) {

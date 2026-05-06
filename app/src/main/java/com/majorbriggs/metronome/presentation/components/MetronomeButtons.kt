@@ -62,7 +62,7 @@ fun IndicationButton(mode: FeedbackMode, onClick: () -> Unit, modifier: Modifier
             },
         contentAlignment = Alignment.Center
     ) {
-        IndicationIcon(mode = mode, tint = Color(0xFF888888), size = 16.dp)
+        IndicationIcon(mode = mode, tint = Color(0xFF888888), size = 18.dp)
     }
 }
 

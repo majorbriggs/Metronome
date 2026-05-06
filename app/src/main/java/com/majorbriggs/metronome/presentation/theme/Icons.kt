@@ -61,30 +61,36 @@ fun IconAudio(tint: Color, size: Dp = 18.dp) {
 fun IconBoth(tint: Color, size: Dp = 18.dp) {
     Canvas(Modifier.size(size)) {
         val s = this.size.width / 18f
-        val stroke = Stroke(width = 1.5f * s, cap = StrokeCap.Round, join = StrokeJoin.Round)
+        val sw = 1.5f * s
+        val stroke = Stroke(width = sw, cap = StrokeCap.Round, join = StrokeJoin.Round)
+
+        // Speaker in top-left (original coords scaled by 0.6, centered ~(3.5, 4))
+        val speakerBody = Path().apply {
+            moveTo(1.4f * s, 2.5f * s)
+            lineTo(3.2f * s, 2.5f * s)
+            lineTo(5.6f * s, 0.7f * s)
+            lineTo(5.6f * s, 7.3f * s)
+            lineTo(3.2f * s, 5.5f * s)
+            lineTo(1.4f * s, 5.5f * s)
+            close()
+        }
+        drawPath(speakerBody, color = tint, style = stroke)
+        val speakerWave = Path().apply {
+            moveTo(7.4f * s, 2.2f * s)
+            cubicTo(8.06f * s, 2.86f * s, 8.06f * s, 5.14f * s, 7.4f * s, 5.8f * s)
+        }
+        drawPath(speakerWave, color = tint, style = stroke)
+
+        // Vibration in bottom-right (original coords scaled by 0.6, centered ~(13, 13))
         drawRoundRect(
             color = tint,
-            topLeft = Offset(1.5f * s, 5.5f * s),
-            size = Size(5 * s, 7 * s),
-            cornerRadius = CornerRadius(1 * s),
-            style = stroke
+            topLeft = Offset(10.4f * s, 9.4f * s),
+            size = Size(4.8f * s, 7.2f * s),
+            cornerRadius = CornerRadius(0.9f * s),
+            style = Stroke(width = sw, cap = StrokeCap.Round)
         )
-        drawLine(
-            tint,
-            Offset(0.5f * s, 7.5f * s),
-            Offset(0.5f * s, 10.5f * s),
-            1.5f * s,
-            cap = StrokeCap.Round
-        )
-        val speaker = Path().apply {
-            moveTo(9 * s, 7 * s); lineTo(12 * s, 5 * s)
-            lineTo(12 * s, 13 * s); lineTo(9 * s, 11 * s); close()
-        }
-        drawPath(speaker, color = tint, style = stroke)
-        val w = Path().apply {
-            moveTo(14 * s, 7.5f * s)
-            cubicTo(15.1f * s, 8.5f * s, 15.1f * s, 9.5f * s, 14 * s, 10.5f * s)
-        }
-        drawPath(w, color = tint, style = stroke)
+        drawLine(tint, Offset(8.6f * s, 11.2f * s), Offset(8.6f * s, 14.8f * s), sw, cap = StrokeCap.Round)
+        drawLine(tint, Offset(17.0f * s, 11.2f * s), Offset(17.0f * s, 14.8f * s), sw, cap = StrokeCap.Round)
+
     }
 }
