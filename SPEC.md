@@ -21,11 +21,11 @@ A free, open-source metronome application for Wear OS, targeting musicians who n
 
 Supported signatures (user-selectable):
 
-| Signature | Beats per bar | Accent on |
-|-----------|--------------|-----------|
-| 4/4       | 4            | Beat 1    |
-| 3/4       | 3            | Beat 1    |
-| 6/8       | 6            | Beats 1 and 4 |
+| Signature | Beats per bar | Accent on     |
+|-----------|---------------|---------------|
+| 4/4       | 4             | Beat 1        |
+| 3/4       | 3             | Beat 1        |
+| 6/8       | 6             | Beats 1 and 4 |
 
 Selected signature persists across restarts.
 
@@ -33,15 +33,14 @@ Selected signature persists across restarts.
 
 Each beat produces a signal. Beat type determines signal intensity:
 
-| Beat type       | Audio cue              | Haptic cue           |
-|-----------------|------------------------|----------------------|
-| Accented beat   | Higher-pitched click   | Long vibration (~80 ms) |
-| Regular beat    | Lower-pitched click    | Short vibration (~25 ms) |
+| Beat type     | Audio cue            | Haptic cue               |
+|---------------|----------------------|--------------------------|
+| Accented beat | Higher-pitched click | Long vibration (~80 ms)  |
+| Regular beat  | Lower-pitched click  | Short vibration (~25 ms) |
 
-The user selects one of three **feedback modes** (persisted):
-- **Vibration only** — no audio output
-- **Audio only** — no haptic output
-- **Both** — vibration and audio simultaneously
+The user selects one of two **feedback modes** (persisted):
+- **Vibration**
+- **Audio**
 
 Audio uses `AudioTrack` in streaming mode — the engine writes PCM samples continuously and embeds click sounds at sample-exact beat positions, eliminating OS-scheduler jitter. Vibration uses `VibrationEffect` (API 26+).
 
@@ -69,7 +68,7 @@ The app has **one main screen**. No navigation between multiple screens — all 
 4. **Time signature selector** — a horizontal swipeable or tappable chip row cycling through `4/4 → 3/4 → 6/8 → 4/4`.
 5. **Start / Stop button** — prominent center action. Toggles metronome on/off.
 6. **Tap Tempo button** — secondary button below start/stop.
-7. **Feedback mode toggle** — icon button cycling through `vibration → audio → both`.
+7. **Feedback mode toggle** — icon button changing between `vibration` and `audio`.
 
 ### 3.2 Visual Beat Indicator
 
@@ -152,11 +151,11 @@ Standalone app declaration (no phone companion required):
 
 Use **Jetpack DataStore (Preferences)** to persist:
 
-| Key | Type | Default |
-|-----|------|---------|
-| `bpm` | Int | 120 |
-| `time_signature` | String enum (`4_4`, `3_4`, `6_8`) | `4_4` |
-| `feedback_mode` | String enum (`vibration`, `audio`, `both`) | `both` |
+| Key              | Type                                     | Default |
+|------------------|------------------------------------------|---------|
+| `bpm`            | Int                                      | 120     |
+| `time_signature` | String enum (`1_1`, `4_4`, `3_4`, `6_8`) | `4_4`   |
+| `feedback_mode`  | String enum (`vibration`, `audio`)       | `audio` |
 
 No other storage required for v1.
 
@@ -202,7 +201,7 @@ com.majorbriggs.metronome
 1. `MetronomeViewModel` reads persisted settings from `MetronomePreferences` and exposes UI state as `StateFlow`.
 2. User interactions in `MetronomeScreen` call ViewModel methods.
 3. Start/Stop commands from ViewModel bind/unbind to `MetronomeService` via `ServiceConnection`.
-4. `MetronomeService` starts the appropriate engine: `MetronomeAudioEngine` (AudioTrack streaming) for audio/both modes, `BeatScheduler` (HandlerThread) for vibration-only. Beat callbacks call `BeatVibrator` for haptics and push beat position to the repository.
+4. `MetronomeService` starts the appropriate engine: `MetronomeAudioEngine` (AudioTrack streaming) for audio mode, `BeatScheduler` (HandlerThread) for vibration-only. Beat callbacks call `BeatVibrator` for haptics and push beat position to the repository.
 5. Beat position updates the `MetronomeScreen` beat indicator in real time.
 
 ---

@@ -33,11 +33,10 @@ enum class TimeSignature(
 
 enum class FeedbackMode(val key: String, val label: String) {
     VIBRATION("vibration", "VIB"),
-    AUDIO("audio", "SND"),
-    BOTH("both", "ALL");
+    AUDIO("audio", "SND");
 
     companion object {
-        fun fromKey(key: String) = entries.find { it.key == key } ?: BOTH
+        fun fromKey(key: String) = entries.find { it.key == key } ?: VIBRATION
     }
 }
 
@@ -56,7 +55,7 @@ class MetronomePreferences @Inject constructor(@ApplicationContext context: Cont
         TimeSignature.fromKey(it[TIME_SIGNATURE_KEY] ?: "4_4")
     }
     val feedbackMode: Flow<FeedbackMode> = dataStore.data.map {
-        FeedbackMode.fromKey(it[FEEDBACK_MODE_KEY] ?: "both")
+        FeedbackMode.fromKey(it[FEEDBACK_MODE_KEY] ?: "audio")
     }
 
     suspend fun setBpm(bpm: Int) {

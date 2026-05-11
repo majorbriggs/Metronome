@@ -106,7 +106,6 @@ class MetronomeAudioEngine @Inject constructor(
         if (!isRunning) return
         isRunning = false
         callbackHandler.removeCallbacksAndMessages(null)
-        // Stop the track before join() so any blocked write() call returns immediately
         audioTrack?.stop()
         audioThread?.join(500)
         audioTrack?.release()

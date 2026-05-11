@@ -56,12 +56,10 @@ class MetronomeRepository @Inject constructor(
         )
     }
 
-    // Called by MetronomeService on each beat tick
     fun onBeat(beatIndex: Int) {
         _currentBeat.value = beatIndex
     }
 
-    // Called by MetronomeService when it stops itself (e.g. notification Stop action)
     fun onServiceStopped() = markStopped()
 
     private fun markStopped() {

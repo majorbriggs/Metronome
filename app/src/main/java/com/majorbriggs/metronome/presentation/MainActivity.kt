@@ -20,7 +20,6 @@ import androidx.wear.ambient.AmbientLifecycleObserver
 import androidx.wear.compose.navigation.SwipeDismissableNavHost
 import androidx.wear.compose.navigation.composable
 import androidx.wear.compose.navigation.rememberSwipeDismissableNavController
-import com.majorbriggs.metronome.presentation.feedbackmode.FeedbackModeScreen
 import com.majorbriggs.metronome.presentation.main.AmbientMetronomeScreen
 import com.majorbriggs.metronome.presentation.main.MetronomeScreen
 import com.majorbriggs.metronome.presentation.main.MetronomeViewModel
@@ -85,10 +84,10 @@ class MainActivity : ComponentActivity() {
                             MetronomeScreen(
                                 state = state,
                                 onTogglePlay = viewModel::togglePlayPause,
-                                onBpmChange = viewModel::setBpm,
+                                onRotaryScroll = viewModel::onRotaryScroll,
                                 onTapTempo = viewModel::onTapTempo,
                                 onNavigateToTimeSig = { navController.navigate("time_sig") },
-                                onNavigateToFeedbackMode = { navController.navigate("feedback_mode") }
+                                onToggleFeedbackMode = viewModel::toggleFeedbackMode
                             )
                         }
                         composable("time_sig") {
@@ -96,15 +95,6 @@ class MainActivity : ComponentActivity() {
                                 selectedSig = state.timeSignature,
                                 onSelect = { sig ->
                                     viewModel.setTimeSignature(sig)
-                                    navController.popBackStack()
-                                }
-                            )
-                        }
-                        composable("feedback_mode") {
-                            FeedbackModeScreen(
-                                selectedMode = state.feedbackMode,
-                                onSelect = { mode ->
-                                    viewModel.setFeedbackMode(mode)
                                     navController.popBackStack()
                                 }
                             )

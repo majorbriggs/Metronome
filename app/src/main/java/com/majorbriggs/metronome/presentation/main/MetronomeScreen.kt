@@ -11,10 +11,7 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
@@ -46,13 +43,12 @@ import com.majorbriggs.metronome.presentation.theme.OutfitFamily
 fun MetronomeScreen(
     state: MetronomeUiState,
     onTogglePlay: () -> Unit,
-    onBpmChange: (Int) -> Unit,
+    onRotaryScroll: (Float) -> Unit,
     onTapTempo: () -> Unit,
     onNavigateToTimeSig: () -> Unit,
-    onNavigateToFeedbackMode: () -> Unit
+    onToggleFeedbackMode: () -> Unit
 ) {
     val focusRequester = remember { FocusRequester() }
-    var bpmAccumulator by remember { mutableFloatStateOf(0f) }
 
     LaunchedEffect(Unit) { focusRequester.requestFocus() }
 
@@ -61,9 +57,7 @@ fun MetronomeScreen(
             .fillMaxSize()
             .background(BgPrimary)
             .onRotaryScrollEvent { event ->
-                val delta = event.verticalScrollPixels / 5000f
-                bpmAccumulator = (bpmAccumulator + delta).coerceIn(0f, 1f)
-                onBpmChange((40 + 200 * bpmAccumulator).toInt())
+                onRotaryScroll(event.verticalScrollPixels)
                 true
             }
             .focusRequester(focusRequester)
@@ -109,7 +103,7 @@ fun MetronomeScreen(
                 )
                 FeedbackModeButton(
                     mode = state.feedbackMode,
-                    onClick = onNavigateToFeedbackMode
+                    onClick = onToggleFeedbackMode
                 )
                 TapTempoButton(onClick = onTapTempo)
             }
@@ -154,9 +148,9 @@ fun MetronomeScreenPreview() {
     MetronomeScreen(
         state = MetronomeUiState(bpm = 120, isRunning = false),
         onTogglePlay = {},
-        onBpmChange = {},
+        onRotaryScroll = {},
         onTapTempo = {},
         onNavigateToTimeSig = {},
-        onNavigateToFeedbackMode = {}
+        onToggleFeedbackMode = {}
     )
 }

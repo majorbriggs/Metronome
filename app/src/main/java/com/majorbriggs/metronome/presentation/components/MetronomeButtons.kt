@@ -22,7 +22,6 @@ import androidx.wear.compose.material.Text
 import com.majorbriggs.metronome.data.FeedbackMode
 import com.majorbriggs.metronome.data.TimeSignature
 import com.majorbriggs.metronome.presentation.theme.IconAudio
-import com.majorbriggs.metronome.presentation.theme.IconBoth
 import com.majorbriggs.metronome.presentation.theme.IconVibrate
 import com.majorbriggs.metronome.presentation.theme.OutfitFamily
 
@@ -96,6 +95,5 @@ fun FeedbackModeIcon(mode: FeedbackMode, tint: Color, size: Dp = 18.dp) {
     when (mode) {
         FeedbackMode.VIBRATION -> IconVibrate(tint = tint, size = size)
         FeedbackMode.AUDIO -> IconAudio(tint = tint, size = size)
-        FeedbackMode.BOTH -> IconBoth(tint = tint, size = size)
     }
 }

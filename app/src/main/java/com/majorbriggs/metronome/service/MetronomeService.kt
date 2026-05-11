@@ -47,7 +47,7 @@ class MetronomeService : Service() {
     private var mediaSession: MediaSession? = null
     private var bpm = 120
     private var timeSignature = TimeSignature.FOUR_FOUR
-    private var feedbackMode = FeedbackMode.BOTH
+    private var feedbackMode = FeedbackMode.AUDIO
     private var isRunning = false
 
     override fun onCreate() {
@@ -65,7 +65,7 @@ class MetronomeService : Service() {
             ACTION_START -> {
                 bpm = intent.getIntExtra(EXTRA_BPM, 120)
                 timeSignature = TimeSignature.fromKey(intent.getStringExtra(EXTRA_TIME_SIG) ?: "4_4")
-                feedbackMode = FeedbackMode.fromKey(intent.getStringExtra(EXTRA_FEEDBACK_MODE) ?: "both")
+                feedbackMode = FeedbackMode.fromKey(intent.getStringExtra(EXTRA_FEEDBACK_MODE) ?: "audio")
                 isRunning = true
                 acquireWakeLock()
                 activateMediaSession()
@@ -132,7 +132,7 @@ class MetronomeService : Service() {
 
     private fun startEngines() {
         when (feedbackMode) {
-            FeedbackMode.AUDIO, FeedbackMode.BOTH -> audioEngine.start(bpm, timeSignature)
+            FeedbackMode.AUDIO -> audioEngine.start(bpm, timeSignature)
             FeedbackMode.VIBRATION -> beatScheduler.start(bpm, timeSignature)
         }
     }
@@ -153,7 +153,7 @@ class MetronomeService : Service() {
     }
 
     private fun handleBeat(beatIndex: Int, isAccent: Boolean) {
-        if (feedbackMode == FeedbackMode.VIBRATION || feedbackMode == FeedbackMode.BOTH) {
+        if (feedbackMode == FeedbackMode.VIBRATION) {
             vibrate(isAccent)
         }
         repository.onBeat(beatIndex)

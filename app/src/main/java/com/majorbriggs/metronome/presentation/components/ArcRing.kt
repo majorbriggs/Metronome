@@ -11,18 +11,16 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.unit.dp
 import androidx.wear.tooling.preview.devices.WearDevices
 import androidx.compose.ui.tooling.preview.Preview
+import com.majorbriggs.metronome.data.MetronomeDefaults
 import com.majorbriggs.metronome.presentation.theme.Accent
 import com.majorbriggs.metronome.presentation.theme.MetronomeTheme
 
-/**
- * A circular arc ring that visualizes the current BPM relative to the min/max range.
- */
 @Composable
 fun ArcRing(
-    bpm: Int, 
+    bpm: Int,
     modifier: Modifier = Modifier,
-    minBpm: Int = 40,
-    maxBpm: Int = 240
+    minBpm: Int = MetronomeDefaults.MIN_BPM,
+    maxBpm: Int = MetronomeDefaults.MAX_BPM
 ) {
     val pct = ((bpm - minBpm.toFloat()) / (maxBpm - minBpm).toFloat()).coerceIn(0f, 1f)
     val trackColor = Color(0xFF252525)
