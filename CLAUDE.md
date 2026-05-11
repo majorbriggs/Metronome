@@ -17,8 +17,6 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 **Platform:** Wear OS (smartwatch) app — minimum SDK 30, target SDK 36.
 
-**Single-module** project under `:app`. All code lives in `com.majorbriggs.metronome.presentation`.
-
 **UI:** Jetpack Compose with Wear Compose Material. Entry point is `MainActivity`, which installs the splash screen and sets the Compose content. `MetronomeTheme` wraps `MaterialTheme` for Wear OS.
 
 **Key tech stack:**
@@ -26,7 +24,5 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - Compose BOM 2024.09.00, Wear Compose Material/Foundation 1.2.1
 - Play Services Wearable 19.0.0 for Wear OS APIs
 - Dependencies managed via version catalog at `gradle/libs.versions.toml`
-
-**Project state:** Early-stage template. The current UI is a placeholder greeting. No ViewModel, persistence, networking, or DI framework is in place yet.
 
 **Lint:** `app/lint.xml` suppresses `IconLocation` for tile previews.
