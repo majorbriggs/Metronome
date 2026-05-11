@@ -1,4 +1,4 @@
-# Metronome for Wear OS
+# Metronome
 
 A free, open-source metronome for Wear OS.
 
