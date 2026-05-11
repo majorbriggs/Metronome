@@ -85,6 +85,7 @@ class MainActivity : ComponentActivity() {
                                 state = state,
                                 onTogglePlay = viewModel::togglePlayPause,
                                 onRotaryScroll = viewModel::onRotaryScroll,
+                                onAdjustBpm = viewModel::adjustBpm,
                                 onTapTempo = viewModel::onTapTempo,
                                 onNavigateToTimeSig = { navController.navigate("time_sig") },
                                 onToggleFeedbackMode = viewModel::toggleFeedbackMode

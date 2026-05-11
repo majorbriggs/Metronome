@@ -3,14 +3,22 @@ package com.majorbriggs.metronome.presentation.components
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.awaitEachGesture
+import androidx.compose.foundation.gestures.awaitFirstDown
+import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.gestures.waitForUpOrCancellation
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
@@ -24,6 +32,11 @@ import com.majorbriggs.metronome.data.TimeSignature
 import com.majorbriggs.metronome.presentation.theme.IconAudio
 import com.majorbriggs.metronome.presentation.theme.IconVibrate
 import com.majorbriggs.metronome.presentation.theme.OutfitFamily
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.launch
+
+private const val LONG_PRESS_INITIAL_DELAY_MS = 500L
 
 @Composable
 fun TimeSigButton(sig: TimeSignature, onClick: () -> Unit, modifier: Modifier = Modifier) {
@@ -86,6 +99,56 @@ fun TapTempoButton(onClick: () -> Unit, modifier: Modifier = Modifier) {
             fontWeight = FontWeight.Bold,
             color = Color(0xFFAAAAAA),
             letterSpacing = 0.08.em
+        )
+    }
+}
+
+@Composable
+fun BpmAdjustButton(
+    label: String,
+    onPress: () -> Unit,
+    onRepeat: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val scope = rememberCoroutineScope()
+    Box(
+        modifier = modifier
+            .size(34.dp)
+            .clip(CircleShape)
+            .background(Color(0xFF1E1E1E))
+            .border(1.5.dp, Color(0xFF3A3A3A), CircleShape)
+            .pointerInput(Unit) {
+                awaitEachGesture {
+                    awaitFirstDown()
+                    var isLongPressTriggered = false
+                    val job = scope.launch {
+                        delay(viewConfiguration.longPressTimeoutMillis)
+                        isLongPressTriggered = true
+                        onRepeat()
+
+                        while (isActive) {
+                            delay(500)
+                            onRepeat()
+                        }
+                    }
+                    val up = waitForUpOrCancellation()
+                    job.cancel()
+                    if (up != null && !isLongPressTriggered) {
+                        onPress()
+                    }
+                }
+            }
+            .semantics {
+                contentDescription = if (label == "+") "Increase tempo" else "Decrease tempo"
+            },
+        contentAlignment = Alignment.Center
+    ) {
+        Text(
+            text = label,
+            fontFamily = OutfitFamily,
+            fontSize = 20.sp,
+            fontWeight = FontWeight.Bold,
+            color = Color(0xFFAAAAAA)
         )
     }
 }

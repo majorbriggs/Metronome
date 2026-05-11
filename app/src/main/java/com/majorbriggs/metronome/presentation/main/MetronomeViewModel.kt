@@ -79,6 +79,10 @@ class MetronomeViewModel @Inject constructor(
         _bpm.value = bpm.coerceIn(MIN_BPM, MAX_BPM)
     }
 
+    fun adjustBpm(delta: Int) {
+        _bpm.value = (_bpm.value + delta).coerceIn(MIN_BPM, MAX_BPM)
+    }
+
     fun setTimeSignature(ts: TimeSignature) {
         repository.sendUpdate(state.value.bpm, ts, state.value.feedbackMode)
         viewModelScope.launch { preferences.setTimeSignature(ts) }

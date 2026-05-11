@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
@@ -33,6 +34,7 @@ import com.majorbriggs.metronome.presentation.MetronomeUiState
 import com.majorbriggs.metronome.presentation.components.ArcRing
 import com.majorbriggs.metronome.presentation.components.BeatIndicatorRow
 import com.majorbriggs.metronome.presentation.components.FeedbackModeButton
+import com.majorbriggs.metronome.presentation.components.BpmAdjustButton
 import com.majorbriggs.metronome.presentation.components.PlayStopButton
 import com.majorbriggs.metronome.presentation.components.TapTempoButton
 import com.majorbriggs.metronome.presentation.components.TimeSigButton
@@ -44,6 +46,7 @@ fun MetronomeScreen(
     state: MetronomeUiState,
     onTogglePlay: () -> Unit,
     onRotaryScroll: (Float) -> Unit,
+    onAdjustBpm: (Int) -> Unit,
     onTapTempo: () -> Unit,
     onNavigateToTimeSig: () -> Unit,
     onToggleFeedbackMode: () -> Unit
@@ -80,18 +83,36 @@ fun MetronomeScreen(
                 accentedBeats = state.timeSignature.accentedBeats,
                 isRunning = state.isRunning
             )
-            Text(
-                text = "${state.bpm}",
-                style = TextStyle(
-                    fontFamily = OutfitFamily,
-                    fontSize = 52.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Color.White,
-                    lineHeight = 52.sp,
-                    platformStyle = PlatformTextStyle(includeFontPadding = false),
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(4.dp)
+            ) {
+                BpmAdjustButton(
+                    label = "−",
+                    onPress = { onAdjustBpm(-1) },
+                    onRepeat = { onAdjustBpm(-5) }
+                )
+                Text(
+                    text = "${state.bpm}",
+                    style = TextStyle(
+                        fontFamily = OutfitFamily,
+                        fontSize = 50.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color.White,
+                        lineHeight = 50.sp,
+                        platformStyle = PlatformTextStyle(includeFontPadding = false),
                     ),
-                modifier = Modifier.semantics { contentDescription = "${state.bpm} BPM" }
-            )
+                    modifier = Modifier
+                        .width(100.dp)
+                        .semantics { contentDescription = "${state.bpm} BPM" },
+                    textAlign = TextAlign.Center
+                )
+                BpmAdjustButton(
+                    label = "+",
+                    onPress = { onAdjustBpm(1) },
+                    onRepeat = { onAdjustBpm(5) }
+                )
+            }
 
             Row(
                 modifier = Modifier.padding(bottom = 10.dp), 
@@ -149,6 +170,7 @@ fun MetronomeScreenPreview() {
         state = MetronomeUiState(bpm = 120, isRunning = false),
         onTogglePlay = {},
         onRotaryScroll = {},
+        onAdjustBpm = {},
         onTapTempo = {},
         onNavigateToTimeSig = {},
         onToggleFeedbackMode = {}
