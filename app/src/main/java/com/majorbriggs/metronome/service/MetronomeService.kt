@@ -148,8 +148,7 @@ class MetronomeService : Service() {
         stopEngines()
         releaseWakeLock()
         deactivateMediaSession()
-        @Suppress("DEPRECATION")
-        stopForeground(true)
+        stopForeground(STOP_FOREGROUND_REMOVE)
     }
 
     private fun handleBeat(beatIndex: Int, isAccent: Boolean) {
