@@ -1,6 +1,6 @@
 # Metronome for Wear OS
 
-A free, open-source metronome for Wear OS. Demo project created almost completely using Claude Code.
+A free, open-source metronome for Wear OS.
 
 ## Features
 
