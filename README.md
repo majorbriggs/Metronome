@@ -12,7 +12,7 @@ A free, open-source metronome for Wear OS.
 - **Background operation** — foreground service + wake lock keeps the beat going with the screen off
 - **Persisted settings** — BPM, time signature, and feedback mode survive restarts
 
-No ads. No in-app purchases. No data collection. [Privacy policy](https://majorbriggs.github.io/Metronome/privacy-policy.html).
+No ads. No in-app purchases. No data collection. [Privacy policy](https://majorbriggs.github.io/Metronome-for-WearOS/privacy-policy.html).
 
 ## Requirements
 

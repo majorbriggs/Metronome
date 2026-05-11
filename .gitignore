@@ -26,6 +26,9 @@ misc.xml
 deploymentTargetDropDown.xml
 render.experimental.xml
 
+# Claude Code local context
+.claude/
+
 # Keystore files
 *.jks
 *.keystore
